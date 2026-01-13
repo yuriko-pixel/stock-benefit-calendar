@@ -205,7 +205,7 @@ export function FilterPanel({
           {Array.from(selectedSectors).map((sector) => (
             <div
               key={`sector-${sector}`}
-              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+              className="inline-flex items-center gap-2 bg-white text-foreground px-3 py-1.5 rounded-lg text-sm border border-border shadow-sm"
             >
               <span>{sector}</span>
               <button
@@ -220,7 +220,7 @@ export function FilterPanel({
           {Array.from(selectedBenefitTypes).map((type) => (
             <div
               key={`benefit-${type}`}
-              className="inline-flex items-center gap-2 bg-accent/10 text-accent-foreground px-3 py-1 rounded-full text-sm"
+              className="inline-flex items-center gap-2 bg-white text-foreground px-3 py-1.5 rounded-lg text-sm border border-border shadow-sm"
             >
               <span>{type}</span>
               <button
@@ -235,7 +235,7 @@ export function FilterPanel({
           {Array.from(selectedPriceRanges).map((range) => (
             <div
               key={`price-${range}`}
-              className="inline-flex items-center gap-2 bg-secondary/10 text-secondary-foreground px-3 py-1 rounded-full text-sm"
+              className="inline-flex items-center gap-2 bg-white text-foreground px-3 py-1.5 rounded-lg text-sm border border-border shadow-sm"
             >
               <span>{priceRangeLabels[range]}</span>
               <button
