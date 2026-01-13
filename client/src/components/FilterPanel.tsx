@@ -1,4 +1,5 @@
-import { X } from 'lucide-react';
+import { useState } from 'react';
+import { X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -29,99 +30,208 @@ export function FilterPanel({
   onPriceRangeChange,
   onReset,
 }: FilterPanelProps) {
+  const [expandedFilter, setExpandedFilter] = useState<string | null>(null);
+
   const hasActiveFilters =
     selectedSectors.size > 0 ||
     selectedBenefitTypes.size > 0 ||
     selectedPriceRanges.size > 0;
 
+  const toggleFilter = (filterName: string) => {
+    setExpandedFilter(expandedFilter === filterName ? null : filterName);
+  };
+
   return (
-    <div className="card-nordic p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-foreground">フィルター</h3>
-        {hasActiveFilters && (
+    <div className="space-y-4">
+      {/* Filter Buttons - Horizontal Layout */}
+      <div className="flex flex-wrap gap-3">
+        {/* Sector Filter Button */}
+        <div className="relative">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            onClick={onReset}
-            className="text-xs"
+            onClick={() => toggleFilter('sector')}
+            className="rounded-lg flex items-center gap-2"
           >
-            <X className="w-3 h-3 mr-1" />
-            リセット
+            業種
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                expandedFilter === 'sector' ? 'rotate-180' : ''
+              }`}
+            />
           </Button>
-        )}
-      </div>
 
-      {/* Sector Filter */}
-      <div className="space-y-3">
-        <h4 className="font-semibold text-foreground text-sm">業種</h4>
-        <div className="space-y-2">
-          {sectors.map((sector) => (
-            <div key={sector} className="flex items-center gap-2">
-              <Checkbox
-                id={`sector-${sector}`}
-                checked={selectedSectors.has(sector)}
-                onCheckedChange={(checked) =>
-                  onSectorChange(sector, checked as boolean)
-                }
-              />
-              <Label
-                htmlFor={`sector-${sector}`}
-                className="text-sm cursor-pointer font-normal"
-              >
-                {sector}
-              </Label>
+          {/* Sector Dropdown */}
+          {expandedFilter === 'sector' && (
+            <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {sectors.map((sector) => (
+                  <div key={sector} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`sector-${sector}`}
+                      checked={selectedSectors.has(sector)}
+                      onCheckedChange={(checked) =>
+                        onSectorChange(sector, checked as boolean)
+                      }
+                    />
+                    <Label
+                      htmlFor={`sector-${sector}`}
+                      className="text-sm cursor-pointer font-normal"
+                    >
+                      {sector}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          )}
+        </div>
+
+        {/* Benefit Type Filter Button */}
+        <div className="relative">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => toggleFilter('benefit')}
+            className="rounded-lg flex items-center gap-2"
+          >
+            優待タイプ
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                expandedFilter === 'benefit' ? 'rotate-180' : ''
+              }`}
+            />
+          </Button>
+
+          {/* Benefit Type Dropdown */}
+          {expandedFilter === 'benefit' && (
+            <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
+              <div className="space-y-2">
+                {benefitTypes.map((type) => (
+                  <div key={type} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`benefit-${type}`}
+                      checked={selectedBenefitTypes.has(type)}
+                      onCheckedChange={(checked) =>
+                        onBenefitTypeChange(type, checked as boolean)
+                      }
+                    />
+                    <Label
+                      htmlFor={`benefit-${type}`}
+                      className="text-sm cursor-pointer font-normal"
+                    >
+                      {type}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Price Range Filter Button */}
+        <div className="relative">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => toggleFilter('price')}
+            className="rounded-lg flex items-center gap-2"
+          >
+            最低投資額
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                expandedFilter === 'price' ? 'rotate-180' : ''
+              }`}
+            />
+          </Button>
+
+          {/* Price Range Dropdown */}
+          {expandedFilter === 'price' && (
+            <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
+              <div className="space-y-2">
+                {priceRanges.map((range) => (
+                  <div key={range} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`price-${range}`}
+                      checked={selectedPriceRanges.has(range)}
+                      onCheckedChange={(checked) =>
+                        onPriceRangeChange(range, checked as boolean)
+                      }
+                    />
+                    <Label
+                      htmlFor={`price-${range}`}
+                      className="text-sm cursor-pointer font-normal"
+                    >
+                      {priceRangeLabels[range]}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Benefit Type Filter */}
-      <div className="space-y-3">
-        <h4 className="font-semibold text-foreground text-sm">優待タイプ</h4>
-        <div className="space-y-2">
-          {benefitTypes.map((type) => (
-            <div key={type} className="flex items-center gap-2">
-              <Checkbox
-                id={`benefit-${type}`}
-                checked={selectedBenefitTypes.has(type)}
-                onCheckedChange={(checked) =>
-                  onBenefitTypeChange(type, checked as boolean)
-                }
-              />
-              <Label
-                htmlFor={`benefit-${type}`}
-                className="text-sm cursor-pointer font-normal"
+      {/* Selected Filter Tags */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap gap-2">
+          {Array.from(selectedSectors).map((sector) => (
+            <div
+              key={`sector-${sector}`}
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+            >
+              <span>{sector}</span>
+              <button
+                onClick={() => onSectorChange(sector, false)}
+                className="hover:opacity-70 transition-opacity"
               >
-                {type}
-              </Label>
+                <X className="w-3 h-3" />
+              </button>
             </div>
           ))}
-        </div>
-      </div>
 
-      {/* Price Range Filter */}
-      <div className="space-y-3">
-        <h4 className="font-semibold text-foreground text-sm">最低投資額</h4>
-        <div className="space-y-2">
-          {priceRanges.map((range) => (
-            <div key={range} className="flex items-center gap-2">
-              <Checkbox
-                id={`price-${range}`}
-                checked={selectedPriceRanges.has(range)}
-                onCheckedChange={(checked) =>
-                  onPriceRangeChange(range, checked as boolean)
-                }
-              />
-              <Label
-                htmlFor={`price-${range}`}
-                className="text-sm cursor-pointer font-normal"
+          {Array.from(selectedBenefitTypes).map((type) => (
+            <div
+              key={`benefit-${type}`}
+              className="inline-flex items-center gap-2 bg-accent/10 text-accent-foreground px-3 py-1 rounded-full text-sm"
+            >
+              <span>{type}</span>
+              <button
+                onClick={() => onBenefitTypeChange(type, false)}
+                className="hover:opacity-70 transition-opacity"
               >
-                {priceRangeLabels[range]}
-              </Label>
+                <X className="w-3 h-3" />
+              </button>
             </div>
           ))}
+
+          {Array.from(selectedPriceRanges).map((range) => (
+            <div
+              key={`price-${range}`}
+              className="inline-flex items-center gap-2 bg-secondary/10 text-secondary-foreground px-3 py-1 rounded-full text-sm"
+            >
+              <span>{priceRangeLabels[range]}</span>
+              <button
+                onClick={() => onPriceRangeChange(range, false)}
+                className="hover:opacity-70 transition-opacity"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onReset}
+              className="text-xs ml-2"
+            >
+              すべてクリア
+            </Button>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
