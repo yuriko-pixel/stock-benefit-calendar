@@ -64,6 +64,15 @@ export function FilterPanel({
           {/* Sector Dropdown */}
           {expandedFilter === 'sector' && (
             <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
+                <span className="text-sm font-semibold">業種を選択</span>
+                <button
+                  onClick={() => setExpandedFilter(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {sectors.map((sector) => (
                   <div key={sector} className="flex items-center gap-2">
@@ -106,7 +115,16 @@ export function FilterPanel({
           {/* Benefit Type Dropdown */}
           {expandedFilter === 'benefit' && (
             <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
-              <div className="space-y-2">
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
+                <span className="text-sm font-semibold">優待タイプを選択</span>
+                <button
+                  onClick={() => setExpandedFilter(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
                 {benefitTypes.map((type) => (
                   <div key={type} className="flex items-center gap-2">
                     <Checkbox
@@ -148,7 +166,16 @@ export function FilterPanel({
           {/* Price Range Dropdown */}
           {expandedFilter === 'price' && (
             <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg p-4 shadow-lg z-10 min-w-48">
-              <div className="space-y-2">
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
+                <span className="text-sm font-semibold">最低投資額を選択</span>
+                <button
+                  onClick={() => setExpandedFilter(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
                 {priceRanges.map((range) => (
                   <div key={range} className="flex items-center gap-2">
                     <Checkbox
