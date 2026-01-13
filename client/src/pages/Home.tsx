@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { CalendarView } from '@/components/CalendarView';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -6,18 +6,21 @@ import { BenefitListItem } from '@/components/BenefitListItem';
 import { BenefitDetail } from '@/components/BenefitDetail';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { sampleData, Sector, BenefitType, PriceRange, getPriceRange, StockBenefit } from '@/lib/data';
+import { Spinner } from '@/components/ui/spinner'; // Spinnerコンポーネントを使用
+import { Sector, BenefitType, PriceRange, getPriceRange, StockBenefit, fetchStockBenefits } from '@/lib/data';
 
 /**
- * Design Philosophy: Nordic Minimalism
- * - Warm cream background (#FFFBF5) with gentle blue primary (#5B9BD5)
- * - Green (#70AD47) for ex-right dates, Orange (#FFA500) for ex-dividend dates
- * - Rounded cards (16px) with soft shadows
+ * Design Philosophy: Nordic Green Minimalism
+ * - Warm cream background (#FFFBF5)
+ * - Deep Forest Green Primary (#2F5E4E)
+ * - Natural Sage/Mint accents
+ * - Rounded cards with soft shadows
  * - Noto Sans JP typography for warmth and accessibility
- * - Dark mode support with inverted color scheme
  */
 
 export default function Home() {
+  const [data, setData] = useState<StockBenefit[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date(2024, 0, 1)); // January 2024
   const [selectedSectors, setSelectedSectors] = useState<Set<Sector>>(new Set());
   const [selectedBenefitTypes, setSelectedBenefitTypes] = useState<Set<BenefitType>>(new Set());
@@ -26,14 +29,30 @@ export default function Home() {
   const [displayCount, setDisplayCount] = useState(50);
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
 
-  // Get unique values for filters
-  const uniqueSectors = Array.from(new Set(sampleData.map((item) => item.sector))).sort() as Sector[];
-  const uniqueBenefitTypes = Array.from(new Set(sampleData.map((item) => item.benefitType))).sort() as BenefitType[];
+  // データ取得
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const fetchedData = await fetchStockBenefits();
+        setData(fetchedData);
+      } catch (error) {
+        console.error(error);
+        toast.error('データの読み込みに失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Get unique values for filters (memoized based on fetched data)
+  const uniqueSectors = useMemo(() => Array.from(new Set(data.map((item) => item.sector))).sort() as Sector[], [data]);
+  const uniqueBenefitTypes = useMemo(() => Array.from(new Set(data.map((item) => item.benefitType))).sort() as BenefitType[], [data]);
   const uniquePriceRanges: PriceRange[] = ['under_100k', '100k_500k', '500k_1m', 'over_1m'];
 
   // Filter data
   const filteredData = useMemo(() => {
-    return sampleData.filter((item) => {
+    return data.filter((item) => {
       // Sector filter
       if (selectedSectors.size > 0 && !selectedSectors.has(item.sector)) {
         return false;
@@ -63,7 +82,7 @@ export default function Home() {
 
       return true;
     });
-  }, [selectedSectors, selectedBenefitTypes, selectedPriceRanges, selectedDateFilter]);
+  }, [data, selectedSectors, selectedBenefitTypes, selectedPriceRanges, selectedDateFilter]);
 
   const handleSectorChange = (sector: Sector, checked: boolean) => {
     const newSectors = new Set(selectedSectors);
@@ -114,7 +133,7 @@ export default function Home() {
     setDisplayCount(50);
   };
 
-  const handleShare = (item: typeof sampleData[0]) => {
+  const handleShare = (item: StockBenefit) => {
     const text = `${item.companyName}の株主優待をチェック！\n${item.benefitDescription}\n最低投資額: ${new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', minimumFractionDigits: 0 }).format(item.minInvestment)}`;
 
     if (navigator.share) {
@@ -129,8 +148,16 @@ export default function Home() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   const selectedBenefitData = selectedBenefit
-    ? sampleData.find((item) => item.id === selectedBenefit)
+    ? data.find((item) => item.id === selectedBenefit)
     : null;
 
   if (selectedBenefitData) {
@@ -157,7 +184,7 @@ export default function Home() {
         <div className="space-y-8">
           {/* Calendar */}
           <CalendarView
-            data={sampleData}
+            data={data}
             currentDate={currentDate}
             onMonthChange={setCurrentDate}
             onDateClick={handleDateClick}
