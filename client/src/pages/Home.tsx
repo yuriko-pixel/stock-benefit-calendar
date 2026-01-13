@@ -154,72 +154,34 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Calendar and List */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Calendar */}
-            <CalendarView
-              data={sampleData}
-              currentDate={currentDate}
-              onMonthChange={setCurrentDate}
-              onDateClick={handleDateClick}
-            />
+        <div className="space-y-8">
+          {/* Calendar */}
+          <CalendarView
+            data={sampleData}
+            currentDate={currentDate}
+            onMonthChange={setCurrentDate}
+            onDateClick={handleDateClick}
+          />
 
-            {/* List */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-foreground">
-                  {selectedDateFilter ? '該当する優待' : '全ての優待'} ({filteredData.length}件)
-                </h2>
-                {selectedDateFilter && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedDateFilter(null)}
-                    className="text-xs"
-                  >
-                    ✕ 日付フィルタをクリア
-                  </Button>
-                )}
-              </div>
-
-              {filteredData.length === 0 ? (
-                <div className="card-nordic p-8 text-center">
-                  <p className="text-muted-foreground">
-                    条件に合う優待が見つかりません
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="space-y-3">
-                    {filteredData.slice(0, displayCount).map((item) => (
-                      <BenefitListItem
-                        key={item.id}
-                        item={item}
-                        onClick={() => setSelectedBenefit(item.id)}
-                        onShare={() => handleShare(item)}
-                      />
-                    ))}
-                  </div>
-
-                  {displayCount < filteredData.length && (
-                    <div className="flex justify-center pt-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setDisplayCount(displayCount + 50)}
-                        className="rounded-lg"
-                      >
-                        もっと見る ({displayCount}/{filteredData.length})
-                      </Button>
-                    </div>
-                  )}
-                </>
+          {/* List Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-foreground">
+                {selectedDateFilter ? '該当する優待' : '全ての優待'} ({filteredData.length}件)
+              </h2>
+              {selectedDateFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedDateFilter(null)}
+                  className="text-xs"
+                >
+                  ✕ 日付フィルタをクリア
+                </Button>
               )}
             </div>
-          </div>
 
-          {/* Right Column: Filters */}
-          <div className="lg:col-span-1">
+            {/* Filters */}
             <FilterPanel
               sectors={uniqueSectors}
               benefitTypes={uniqueBenefitTypes}
@@ -232,6 +194,40 @@ export default function Home() {
               onPriceRangeChange={handlePriceRangeChange}
               onReset={handleResetFilters}
             />
+
+            {/* List */}
+            {filteredData.length === 0 ? (
+              <div className="card-nordic p-8 text-center">
+                <p className="text-muted-foreground">
+                  条件に合う優待が見つかりません
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {filteredData.slice(0, displayCount).map((item) => (
+                    <BenefitListItem
+                      key={item.id}
+                      item={item}
+                      onClick={() => setSelectedBenefit(item.id)}
+                      onShare={() => handleShare(item)}
+                    />
+                  ))}
+                </div>
+
+                {displayCount < filteredData.length && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setDisplayCount(displayCount + 50)}
+                      className="rounded-lg"
+                    >
+                      もっと見る ({displayCount}/{filteredData.length})
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </main>
