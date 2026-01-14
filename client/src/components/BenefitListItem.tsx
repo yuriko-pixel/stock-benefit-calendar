@@ -11,7 +11,9 @@ interface BenefitListItemProps {
 export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps) {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}/${day}`;
   };
 
   const formatPrice = (price: number) => {
@@ -51,20 +53,20 @@ export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps
           </p>
 
           {/* Dates and Price */}
-          <div className="flex flex-wrap gap-4 text-xs mb-2">
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">権利確定日:</span>
+          <div className="flex flex-wrap gap-5 text-xs mb-2 items-center">
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground text-xs">確:</span>
               <span
-                className="font-semibold"
+                className="font-bold text-base"
                 style={{ color: 'var(--color-ex-right)' }}
               >
                 {formatDate(item.exRightDate)}
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground">権利落ち日:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground text-xs">落:</span>
               <span
-                className="font-semibold"
+                className="font-bold text-base"
                 style={{ color: 'var(--color-ex-dividend)' }}
               >
                 {formatDate(item.exDividendDate)}
