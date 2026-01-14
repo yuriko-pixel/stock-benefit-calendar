@@ -228,7 +228,7 @@ export default function Home() {
               </div>
             ) : (
               <>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {filteredData.slice(0, displayCount).map((item) => (
                     <BenefitListItem
                       key={item.id}
