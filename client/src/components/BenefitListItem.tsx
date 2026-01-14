@@ -1,6 +1,7 @@
-import { ChevronRight, Share2 } from 'lucide-react';
+import { ChevronRight, Share2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StockBenefit } from '@/lib/data';
+import { addToGoogleCalendar, createBenefitCalendarEvent } from '@/lib/googleCalendar';
 
 interface BenefitListItemProps {
   item: StockBenefit;
@@ -20,6 +21,16 @@ export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps
       currency: 'JPY',
       minimumFractionDigits: 0,
     }).format(price);
+  };
+
+  const handleAddToCalendar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const event = createBenefitCalendarEvent(
+      item.companyName,
+      item.exRightDate,
+      item.benefitDescription
+    );
+    addToGoogleCalendar(event);
   };
 
   return (
@@ -120,6 +131,15 @@ export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps
             title="シェア"
           >
             <Share2 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleAddToCalendar}
+            className="rounded-lg"
+            title="Googleカレンダーに追加"
+          >
+            <Calendar className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
