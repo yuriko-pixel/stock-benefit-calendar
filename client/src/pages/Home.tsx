@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { CalendarView } from '@/components/CalendarView';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -6,7 +6,7 @@ import { BenefitListItem } from '@/components/BenefitListItem';
 import { BenefitDetail } from '@/components/BenefitDetail';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { sampleData, Sector, BenefitType, PriceRange, getPriceRange, StockBenefit } from '@/lib/data';
+import { loadSampleData, Sector, BenefitType, PriceRange, getPriceRange, StockBenefit } from '@/lib/data';
 
 /**
  * Design Philosophy: Nordic Minimalism
@@ -25,6 +25,19 @@ export default function Home() {
   const [selectedBenefit, setSelectedBenefit] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(50);
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
+  const [sampleData, setSampleData] = useState<StockBenefit[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load data from JSON file
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      const data = await loadSampleData();
+      setSampleData(data);
+      setIsLoading(false);
+    };
+    loadData();
+  }, []);
 
   // Get unique values for filters
   const uniqueSectors = Array.from(new Set(sampleData.map((item) => item.sector))).sort() as Sector[];
@@ -63,7 +76,7 @@ export default function Home() {
 
       return true;
     });
-  }, [selectedSectors, selectedBenefitTypes, selectedPriceRanges, selectedDateFilter]);
+  }, [sampleData, selectedSectors, selectedBenefitTypes, selectedPriceRanges, selectedDateFilter]);
 
   const handleSectorChange = (sector: Sector, checked: boolean) => {
     const newSectors = new Set(selectedSectors);
@@ -114,7 +127,7 @@ export default function Home() {
     setDisplayCount(50);
   };
 
-  const handleShare = (item: typeof sampleData[0]) => {
+  const handleShare = (item: StockBenefit) => {
     const text = `${item.companyName}の株主優待をチェック！\n${item.benefitDescription}\n最低投資額: ${new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', minimumFractionDigits: 0 }).format(item.minInvestment)}`;
 
     if (navigator.share) {
@@ -132,6 +145,17 @@ export default function Home() {
   const selectedBenefitData = selectedBenefit
     ? sampleData.find((item) => item.id === selectedBenefit)
     : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-8">
+          <div className="text-center text-muted-foreground">データを読み込み中...</div>
+        </main>
+      </div>
+    );
+  }
 
   if (selectedBenefitData) {
     return (

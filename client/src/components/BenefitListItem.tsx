@@ -51,7 +51,7 @@ export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps
           </p>
 
           {/* Dates and Price */}
-          <div className="flex flex-wrap gap-4 text-xs">
+          <div className="flex flex-wrap gap-4 text-xs mb-2">
             <div className="flex items-center gap-1">
               <span className="text-muted-foreground">権利確定日:</span>
               <span
@@ -74,6 +74,34 @@ export function BenefitListItem({ item, onClick, onShare }: BenefitListItemProps
               <span className="text-muted-foreground">最低投資額:</span>
               <span className="font-semibold text-foreground">
                 {formatPrice(item.minInvestment)}
+              </span>
+            </div>
+          </div>
+
+          {/* Stock Price and Yields */}
+          <div className="flex flex-wrap gap-4 text-xs">
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">株価:</span>
+              <span className="font-semibold text-foreground">
+                {formatPrice(item.previousClosePrice)}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">優待価値:</span>
+              <span className="font-semibold text-foreground">
+                {formatPrice(item.benefitValue)}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">配当利回り:</span>
+              <span className="font-semibold text-foreground">
+                {item.dividendYield.toFixed(2)}%
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">総合利回り:</span>
+              <span className="font-semibold" style={{ color: 'var(--color-ex-right)' }}>
+                {item.totalYield.toFixed(2)}%
               </span>
             </div>
           </div>
